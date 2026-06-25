@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sleeper Business OS</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#f5f5f5;color:#1a1a1a;min-height:100vh}
+.header{background:#fff;border-bottom:1px solid #e5e5e5;padding:12px 16px;display:flex;align-items:center;gap:10px}
+.header h1{font-size:17px;font-weight:600}
+.header .dot{width:8px;height:8px;border-radius:50%;background:#22c55e}
+.nav{display:flex;gap:6px;padding:12px 16px;overflow-x:auto;background:#fff;border-bottom:1px solid #e5e5e5}
+.nav::-webkit-scrollbar{display:none}
+.nav-btn{padding:6px 12px;font-size:12px;border:1px solid #d1d5db;border-radius:20px;cursor:pointer;background:#fff;color:#555;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.nav-btn.active{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
+.content{padding:16px;max-width:800px;margin:0 auto}
+.section{display:none}.section.active{display:block}
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.metric{background:#fff;border-radius:12px;padding:14px;border:1px solid #e5e5e5}
+.metric-label{font-size:11px;color:#888;margin-bottom:4px}
+.metric-val{font-size:20px;font-weight:600}
+.metric-val.green{color:#16a34a}.metric-val.red{color:#dc2626}.metric-val.amber{color:#d97706}
+.card{background:#fff;border-radius:12px;padding:14px;margin-bottom:12px;border:1px solid #e5e5e5}
+.section-title{font-size:16px;font-weight:600;margin-bottom:14px}
+table{width:100%;font-size:12px;border-collapse:collapse}
+th{text-align:left;font-size:11px;font-weight:600;color:#888;padding:6px 6px;border-bottom:1px solid #e5e5e5}
+td{padding:8px 6px;border-bottom:1px solid #f0f0f0;color:#1a1a1a;vertical-align:middle}
+.badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500}
+.badge-green{background:#dcfce7;color:#15803d}
+.badge-red{background:#fee2e2;color:#b91c1c}
+.badge-amber{background:#fef3c7;color:#b45309}
+.badge-blue{background:#dbeafe;color:#1d4ed8}
+.add-form{display:grid;gap:8px;margin-bottom:12px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+input,select,textarea{width:100%;padding:9px 12px;font-size:13px;border:1px solid #d1d5db;border-radius:8px;background:#fff;color:#1a1a1a;outline:none}
+input:focus,select:focus,textarea:focus{border-color:#1d4ed8;box-shadow:0 0 0 2px #dbeafe}
+textarea{resize:none;font-family:inherit}
+.btn{padding:9px 16px;font-size:13px;font-weight:500;border:1px solid #d1d5db;border-radius:8px;cursor:pointer;background:#fff;color:#1a1a1a;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
+.btn-danger{background:#fee2e2;color:#b91c1c;border:none;padding:4px 8px;font-size:12px;border-radius:6px;cursor:pointer}
+.chat-box{max-height:300px;overflow-y:auto;padding:4px 0;display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.msg{padding:9px 13px;border-radius:12px;font-size:14px;max-width:88%;line-height:1.5}
+.msg.user{background:#1d4ed8;color:#fff;align-self:flex-end;border-radius:12px 12px 2px 12px}
+.msg.ai{background:#f3f4f6;color:#1a1a1a;align-self:flex-start;border-radius:12px 12px 12px 2px}
+.msg.ai.loading{color:#888;font-style:italic}
+.send-row{display:flex;gap:8px;align-items:flex-end}
+.send-row textarea{flex:1;height:44px}
+.saved-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:5px 10px;border-radius:20px;background:#f3f4f6;border:1px solid #e5e5e5;cursor:pointer}
+.chip:hover{background:#e5e7eb}
+.chip .del{color:#dc2626;font-size:14px;cursor:pointer}
+.api-warning{background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:10px 12px;font-size:12px;color:#92400e;margin-bottom:12px}
+.empty{text-align:center;padding:24px;color:#9ca3af;font-size:13px}
+.overflow-x{overflow-x:auto}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="dot"></div>
+  <h1>Sleeper Business OS</h1>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="switchTab('ai',this)"><i class="ti ti-robot"></i> AI Agent</button>
+  <button class="nav-btn" onclick="switchTab('stock',this)"><i class="ti ti-package"></i> Stock</button>
+  <button class="nav-btn" onclick="switchTab('orders',this)"><i class="ti ti-file-invoice"></i> Orders</button>
+  <button class="nav-btn" onclick="switchTab('payments',this)"><i class="ti ti-cash"></i> Payments</button>
+  <button class="nav-btn" onclick="switchTab('suppliers',this)"><i class="ti ti-truck"></i> Suppliers</button>
+  <button class="nav-btn" onclick="switchTab('saved',this)"><i class="ti ti-bookmark"></i> Saved</button>
+  <button class="nav-btn" onclick="switchTab('settings',this)"><i class="ti ti-settings"></i> Settings</button>
+</div>
+
+<div class="content">
+
+<!-- AI AGENT -->
+<div id="tab-ai" class="section active">
+  <div class="metric-grid">
+    <div class="metric"><div class="metric-label">Stock value</div><div class="metric-val green" id="m-stock">₹0</div></div>
+    <div class="metric"><div class="metric-label">Pending payment</div><div class="metric-val red" id="m-pending">₹0</div></div>
+    <div class="metric"><div class="metric-label">Total orders</div><div class="metric-val amber" id="m-orders">0</div></div>
+    <div class="metric"><div class="metric-label">Active suppliers</div><div class="metric-val" id="m-suppliers">0</div></div>
+  </div>
+  <div class="card">
+    <div id="api-warn" class="api-warning" style="display:none">
+      ⚠️ API key set nahi hai. Settings mein jaake Anthropic API key daalo. <a href="#" onclick="switchTabByName('settings')">Settings →</a>
+    </div>
+    <div class="chat-box" id="chat-box">
+      <div class="msg ai">Namaste! Main tumhara Sleeper Business AI Agent hoon. Stock, orders, payments, suppliers — sab poochh sakte ho. Web search bhi kar sakta hoon! 🙏</div>
+    </div>
+    <div class="send-row">
+      <textarea id="chat-input" placeholder="Kuch bhi puchho — Hinglish mein bhi chalega..."></textarea>
+      <button class="btn btn-primary" onclick="sendChat()"><i class="ti ti-send"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- STOCK -->
+<div id="tab-stock" class="section">
+  <div class="section-title">Stock management</div>
+  <div class="card">
+    <div class="add-form">
+      <div class="form-row">
+        <input type="text" id="s-name" placeholder="Product name" />
+        <input type="text" id="s-type" placeholder="Type (wooden/concrete...)" />
+      </div>
+      <div class="form-row">
+        <input type="number" id="s-qty" placeholder="Qty (units)" min="0" />
+        <input type="number" id="s-price" placeholder="Price per unit (₹)" min="0" />
+      </div>
+      <button class="btn btn-primary" onclick="addStock()"><i class="ti ti-plus"></i> Add stock</button>
+    </div>
+  </div>
+  <div class="card overflow-x">
+    <table>
+      <thead><tr><th>Product</th><th>Type</th><th>Qty</th><th>Price</th><th>Value</th><th>Status</th><th></th></tr></thead>
+      <tbody id="stock-table"><tr><td colspan="7" class="empty">Koi stock nahi — upar se add karo</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ORDERS -->
+<div id="tab-orders" class="section">
+  <div class="section-title">Order tracker</div>
+  <div class="card">
+    <div class="add-form">
+      <div class="form-row">
+        <input type="text" id="o-buyer" placeholder="Buyer name" />
+        <input type="text" id="o-region" placeholder="Region (UP/Bihar/Uttarakhand...)" />
+      </div>
+      <div class="form-row">
+        <input type="text" id="o-product" placeholder="Product" />
+        <input type="number" id="o-qty" placeholder="Qty" min="1" />
+      </div>
+      <div class="form-row">
+        <input type="number" id="o-amount" placeholder="Order amount (₹)" min="0" />
+        <input type="text" id="o-deadline" placeholder="Deadline (DD/MM/YYYY)" />
+      </div>
+      <div class="form-row">
+        <select id="o-status">
+          <option value="pending">Pending</option>
+          <option value="dispatched">Dispatched</option>
+          <option value="delivered">Delivered</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+        <input type="text" id="o-note" placeholder="Note (optional)" />
+      </div>
+      <button class="btn btn-primary" onclick="addOrder()"><i class="ti ti-plus"></i> Add order</button>
+    </div>
+  </div>
+  <div class="card overflow-x">
+    <table>
+      <thead><tr><th>Buyer</th><th>Region</th><th>Product</th><th>Qty</th><th>Amount</th><th>Deadline</th><th>Status</th><th></th></tr></thead>
+      <tbody id="orders-table"><tr><td colspan="8" class="empty">Koi order nahi</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- PAYMENTS -->
+<div id="tab-payments" class="section">
+  <div class="section-title">Payment tracker</div>
+  <div class="card">
+    <div class="add-form">
+      <div class="form-row">
+        <input type="text" id="p-party" placeholder="Party / buyer name" />
+        <input type="number" id="p-amount" placeholder="Amount (₹)" min="0" />
+      </div>
+      <div class="form-row">
+        <input type="text" id="p-deadline" placeholder="Due date (DD/MM/YYYY)" />
+        <select id="p-status">
+          <option value="pending">Pending</option>
+          <option value="received">Received</option>
+          <option value="overdue">Overdue</option>
+          <option value="partial">Partial</option>
+        </select>
+      </div>
+      <input type="text" id="p-note" placeholder="Note (optional)" />
+      <button class="btn btn-primary" onclick="addPayment()"><i class="ti ti-plus"></i> Add payment</button>
+    </div>
+  </div>
+  <div class="card overflow-x">
+    <table>
+      <thead><tr><th>Party</th><th>Amount</th><th>Due date</th><th>Status</th><th>Note</th><th></th></tr></thead>
+      <tbody id="payments-table"><tr><td colspan="6" class="empty">Koi payment nahi</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SUPPLIERS -->
+<div id="tab-suppliers" class="section">
+  <div class="section-title">Supplier directory</div>
+  <div class="card">
+    <div class="add-form">
+      <div class="form-row">
+        <input type="text" id="sup-name" placeholder="Supplier name" />
+        <input type="text" id="sup-region" placeholder="Region / state" />
+      </div>
+      <div class="form-row">
+        <input type="text" id="sup-product" placeholder="Products supplied" />
+        <input type="text" id="sup-contact" placeholder="Phone number" />
+      </div>
+      <div class="form-row">
+        <input type="number" id="sup-pending" placeholder="Maal pending (units)" min="0" />
+        <select id="sup-status">
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="addSupplier()"><i class="ti ti-plus"></i> Add supplier</button>
+    </div>
+  </div>
+  <div class="card overflow-x">
+    <table>
+      <thead><tr><th>Name</th><th>Region</th><th>Products</th><th>Contact</th><th>Pending</th><th>Status</th><th></th></tr></thead>
+      <tbody id="suppliers-table"><tr><td colspan="7" class="empty">Koi supplier nahi</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SAVED -->
+<div id="tab-saved" class="section">
+  <div class="section-title">Saved items</div>
+  <div class="card">
+    <div class="add-form">
+      <input type="text" id="save-key" placeholder="Label (e.g. Supplier quote, Rate list)" />
+      <textarea id="save-val" rows="3" placeholder="Content to save..."></textarea>
+      <button class="btn btn-primary" onclick="saveItem()"><i class="ti ti-bookmark"></i> Save</button>
+    </div>
+    <div id="saved-items" class="saved-chips"></div>
+  </div>
+  <div id="saved-view" style="display:none" class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <strong id="saved-view-title" style="font-size:14px"></strong>
+      <button class="btn" onclick="document.getElementById('saved-view').style.display='none'">Close</button>
+    </div>
+    <div id="saved-view-body" style="font-size:13px;white-space:pre-wrap;line-height:1.6"></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div id="tab-settings" class="section">
+  <div class="section-title">Settings</div>
+  <div class="card">
+    <p style="font-size:13px;color:#555;margin-bottom:10px">Anthropic API key daalo taaki AI agent kaam kare. Key yahan sirf is device pe save hogi.</p>
+    <div class="add-form">
+      <input type="password" id="api-key-input" placeholder="sk-ant-..." />
+      <button class="btn btn-primary" onclick="saveApiKey()"><i class="ti ti-key"></i> Save API key</button>
+    </div>
+    <p style="font-size:11px;color:#9ca3af;margin-top:8px">Key kahan se milegi: console.anthropic.com → API keys</p>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <p style="font-size:13px;font-weight:500;margin-bottom:8px">Data backup</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" onclick="exportData()"><i class="ti ti-download"></i> Export data (JSON)</button>
+      <button class="btn" onclick="document.getElementById('import-file').click()"><i class="ti ti-upload"></i> Import data</button>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(this)" />
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+let db = JSON.parse(localStorage.getItem('sleeperDB') || '{"stock":[],"orders":[],"payments":[],"suppliers":[],"saved":[]}');
+let chatHistory = [];
+
+function saveDB() { localStorage.setItem('sleeperDB', JSON.stringify(db)); }
+function getApiKey() { return localStorage.getItem('sleeperApiKey') || ''; }
+function saveApiKey() {
+  let k = document.getElementById('api-key-input').value.trim();
+  if (!k) return alert('API key daalo pehle');
+  localStorage.setItem('sleeperApiKey', k);
+  document.getElementById('api-warn').style.display = 'none';
+  alert('API key save ho gayi!');
+}
+
+function switchTab(t, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + t).classList.add('active');
+  if (btn) btn.classList.add('active');
+  updateMetrics();
+  if (t === 'settings' && localStorage.getItem('sleeperApiKey')) {
+    document.getElementById('api-key-input').value = localStorage.getItem('sleeperApiKey');
+  }
+}
+function switchTabByName(t) {
+  let btns = document.querySelectorAll('.nav-btn');
+  let names = ['ai','stock','orders','payments','suppliers','saved','settings'];
+  switchTab(t, btns[names.indexOf(t)]);
+}
+
+function updateMetrics() {
+  let sv = db.stock.reduce((a, s) => a + (s.qty * s.price), 0);
+  let pp = db.payments.filter(p => p.status === 'pending' || p.status === 'overdue' || p.status === 'partial').reduce((a, p) => a + p.amount, 0);
+  document.getElementById('m-stock').textContent = '₹' + sv.toLocaleString('en-IN');
+  document.getElementById('m-pending').textContent = '₹' + pp.toLocaleString('en-IN');
+  document.getElementById('m-orders').textContent = db.orders.length;
+  document.getElementById('m-suppliers').textContent = db.suppliers.filter(s => s.status === 'active').length;
+  if (!getApiKey()) document.getElementById('api-warn').style.display = 'block';
+}
+
+function addStock() {
+  let n = document.getElementById('s-name').value.trim();
+  if (!n) return alert('Product name daalo');
+  db.stock.push({ id: Date.now(), name: n, type: document.getElementById('s-type').value.trim(), qty: parseInt(document.getElementById('s-qty').value) || 0, price: parseFloat(document.getElementById('s-price').value) || 0 });
+  saveDB(); renderStock(); updateMetrics();
+  ['s-name','s-type','s-qty','s-price'].forEach(id => document.getElementById(id).value = '');
+}
+function renderStock() {
+  let tb = document.getElementById('stock-table');
+  if (!db.stock.length) { tb.innerHTML = '<tr><td colspan="7" class="empty">Koi stock nahi</td></tr>'; return; }
+  tb.innerHTML = db.stock.map(s => `<tr>
+    <td>${s.name}</td><td>${s.type}</td><td>${s.qty}</td>
+    <td>₹${s.price.toLocaleString('en-IN')}</td>
+    <td>₹${(s.qty * s.price).toLocaleString('en-IN')}</td>
+    <td><span class="badge ${s.qty > 10 ? 'badge-green' : s.qty > 0 ? 'badge-amber' : 'badge-red'}">${s.qty > 10 ? 'In stock' : s.qty > 0 ? 'Low' : 'Out'}</span></td>
+    <td><button class="btn-danger" onclick="del('stock',${s.id})">Del</button></td>
+  </tr>`).join('');
+}
+
+function addOrder() {
+  let b = document.getElementById('o-buyer').value.trim();
+  if (!b) return alert('Buyer name daalo');
+  db.orders.push({ id: Date.now(), buyer: b, region: document.getElementById('o-region').value.trim(), product: document.getElementById('o-product').value.trim(), qty: parseInt(document.getElementById('o-qty').value) || 0, amount: parseFloat(document.getElementById('o-amount').value) || 0, deadline: document.getElementById('o-deadline').value.trim(), status: document.getElementById('o-status').value, note: document.getElementById('o-note').value.trim() });
+  saveDB(); renderOrders(); updateMetrics();
+  ['o-buyer','o-region','o-product','o-qty','o-amount','o-deadline','o-note'].forEach(id => document.getElementById(id).value = '');
+}
+function renderOrders() {
+  let tb = document.getElementById('orders-table');
+  if (!db.orders.length) { tb.innerHTML = '<tr><td colspan="8" class="empty">Koi order nahi</td></tr>'; return; }
+  const bm = { pending: 'badge-amber', dispatched: 'badge-blue', delivered: 'badge-green', cancelled: 'badge-red' };
+  tb.innerHTML = db.orders.map(o => `<tr>
+    <td>${o.buyer}</td><td>${o.region}</td><td>${o.product}</td><td>${o.qty}</td>
+    <td>₹${o.amount.toLocaleString('en-IN')}</td><td>${o.deadline}</td>
+    <td><span class="badge ${bm[o.status]}">${o.status}</span></td>
+    <td><button class="btn-danger" onclick="del('orders',${o.id})">Del</button></td>
+  </tr>`).join('');
+}
+
+function addPayment() {
+  let p = document.getElementById('p-party').value.trim();
+  if (!p) return alert('Party name daalo');
+  db.payments.push({ id: Date.now(), party: p, amount: parseFloat(document.getElementById('p-amount').value) || 0, deadline: document.getElementById('p-deadline').value.trim(), status: document.getElementById('p-status').value, note: document.getElementById('p-note').value.trim() });
+  saveDB(); renderPayments(); updateMetrics();
+  ['p-party','p-amount','p-deadline','p-note'].forEach(id => document.getElementById(id).value = '');
+}
+function renderPayments() {
+  let tb = document.getElementById('payments-table');
+  if (!db.payments.length) { tb.innerHTML = '<tr><td colspan="6" class="empty">Koi payment nahi</td></tr>'; return; }
+  const bm = { pending: 'badge-amber', received: 'badge-green', overdue: 'badge-red', partial: 'badge-blue' };
+  tb.innerHTML = db.payments.map(p => `<tr>
+    <td>${p.party}</td><td>₹${p.amount.toLocaleString('en-IN')}</td>
+    <td>${p.deadline}</td><td><span class="badge ${bm[p.status]}">${p.status}</span></td>
+    <td>${p.note}</td>
+    <td><button class="btn-danger" onclick="del('payments',${p.id})">Del</button></td>
+  </tr>`).join('');
+}
+
+function addSupplier() {
+  let n = document.getElementById('sup-name').value.trim();
+  if (!n) return alert('Supplier name daalo');
+  db.suppliers.push({ id: Date.now(), name: n, region: document.getElementById('sup-region').value.trim(), product: document.getElementById('sup-product').value.trim(), contact: document.getElementById('sup-contact').value.trim(), pending: parseInt(document.getElementById('sup-pending').value) || 0, status: document.getElementById('sup-status').value });
+  saveDB(); renderSuppliers(); updateMetrics();
+  ['sup-name','sup-region','sup-product','sup-contact','sup-pending'].forEach(id => document.getElementById(id).value = '');
+}
+function renderSuppliers() {
+  let tb = document.getElementById('suppliers-table');
+  if (!db.suppliers.length) { tb.innerHTML = '<tr><td colspan="7" class="empty">Koi supplier nahi</td></tr>'; return; }
+  tb.innerHTML = db.suppliers.map(s => `<tr>
+    <td>${s.name}</td><td>${s.region}</td><td>${s.product}</td>
+    <td><a href="tel:${s.contact}">${s.contact}</a></td>
+    <td>${s.pending > 0 ? `<span class="badge badge-amber">${s.pending} units</span>` : '—'}</td>
+    <td><span class="badge ${s.status === 'active' ? 'badge-green' : 'badge-red'}">${s.status}</span></td>
+    <td><button class="btn-danger" onclick="del('suppliers',${s.id})">Del</button></td>
+  </tr>`).join('');
+}
+
+function saveItem() {
+  let k = document.getElementById('save-key').value.trim();
+  let v = document.getElementById('save-val').value.trim();
+  if (!k || !v) return alert('Label aur content dono daalo');
+  db.saved.push({ id: Date.now(), key: k, val: v });
+  saveDB(); renderSaved();
+  document.getElementById('save-key').value = '';
+  document.getElementById('save-val').value = '';
+}
+function renderSaved() {
+  let c = document.getElementById('saved-items');
+  if (!db.saved.length) { c.innerHTML = '<span style="font-size:13px;color:#9ca3af">Koi saved item nahi</span>'; return; }
+  c.innerHTML = db.saved.map(s => `<div class="chip" onclick="viewSaved(${s.id})">${s.key} <span class="del" onclick="event.stopPropagation();del('saved',${s.id})">×</span></div>`).join('');
+}
+function viewSaved(id) {
+  let item = db.saved.find(s => s.id === id);
+  if (!item) return;
+  document.getElementById('saved-view-title').textContent = item.key;
+  document.getElementById('saved-view-body').textContent = item.val;
+  document.getElementById('saved-view').style.display = 'block';
+}
+
+function del(type, id) {
+  db[type] = db[type].filter(x => x.id !== id);
+  saveDB();
+  if (type === 'stock') renderStock();
+  else if (type === 'orders') renderOrders();
+  else if (type === 'payments') renderPayments();
+  else if (type === 'suppliers') renderSuppliers();
+  else if (type === 'saved') renderSaved();
+  updateMetrics();
+}
+
+async function sendChat() {
+  let inp = document.getElementById('chat-input');
+  let msg = inp.value.trim();
+  if (!msg) return;
+  let key = getApiKey();
+  if (!key) { alert('Pehle Settings mein API key daalo!'); switchTabByName('settings'); return; }
+  inp.value = '';
+  appendMsg('user', msg);
+  let loadDiv = appendMsg('ai loading', 'Soch raha hoon...');
+
+  let stockSummary = db.stock.map(s => `${s.name}(${s.qty} units @₹${s.price})`).join(', ') || 'koi stock nahi';
+  let pendingPay = db.payments.filter(p => p.status !== 'received').map(p => `${p.party}: ₹${p.amount} due ${p.deadline} [${p.status}]`).join(', ') || 'koi pending nahi';
+  let recentOrders = db.orders.slice(-5).map(o => `${o.buyer}(${o.region}): ${o.product} x${o.qty} ₹${o.amount} - ${o.status}`).join(', ') || 'koi order nahi';
+  let supplierList = db.suppliers.map(s => `${s.name}(${s.region}, pending:${s.pending})`).join(', ') || 'koi supplier nahi';
+
+  chatHistory.push({ role: 'user', content: msg });
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        system: `Tu ek smart business AI agent hai sleeper industry ke liye. Hinglish mein baat kar. Current data:\n- Stock: ${stockSummary}\n- Pending payments: ${pendingPay}\n- Recent orders: ${recentOrders}\n- Suppliers: ${supplierList}\n\nBusiness data pe based sawal ho toh upar ka data use kar. Short aur helpful reh.`,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: chatHistory
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    let reply = data.content.filter(c => c.type === 'text').map(c => c.text).join('\n') || 'Kuch samajh nahi aaya, dobara try karo.';
+    chatHistory.push({ role: 'assistant', content: data.content });
+    loadDiv.remove();
+    appendMsg('ai', reply);
+  } catch (e) {
+    loadDiv.remove();
+    appendMsg('ai', 'Error: ' + e.message + '\n\nSettings mein API key check karo.');
+  }
+}
+
+function appendMsg(cls, text) {
+  let box = document.getElementById('chat-box');
+  let d = document.createElement('div');
+  d.className = 'msg ' + cls;
+  d.textContent = text;
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+  return d;
+}
+
+document.getElementById('chat-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+});
+
+function exportData() {
+  let blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+  let a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'sleeper-business-data.json';
+  a.click();
+}
+function importData(input) {
+  let file = input.files[0];
+  if (!file) return;
+  let r = new FileReader();
+  r.onload = e => {
+    try {
+      db = JSON.parse(e.target.result);
+      saveDB();
+      renderStock(); renderOrders(); renderPayments(); renderSuppliers(); renderSaved(); updateMetrics();
+      alert('Data import ho gaya!');
+    } catch { alert('Invalid file'); }
+  };
+  r.readAsText(file);
+}
+
+renderStock(); renderOrders(); renderPayments(); renderSuppliers(); renderSaved(); updateMetrics();
+</script>
+</body>
+</html>
